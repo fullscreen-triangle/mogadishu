@@ -1,0 +1,145 @@
+# Mogadishu S-Entropy Framework - Development Dockerfile
+# Full development environment with debugging tools and hot reload
+
+FROM rust:1.75
+
+# Set working directory
+WORKDIR /workspace
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    cmake \
+    build-essential \
+    git \
+    vim \
+    curl \
+    wget \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    nodejs \
+    npm \
+    fish \
+    tmux \
+    htop \
+    tree \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust development tools
+RUN rustup component add clippy rustfmt rust-src rust-analyzer
+RUN cargo install cargo-watch cargo-tarpaulin cargo-audit cargo-outdated
+
+# Install Python development environment
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Create Python virtual environment
+RUN python3 -m venv /opt/python-dev
+ENV PATH="/opt/python-dev/bin:$PATH"
+
+# Install Python development dependencies
+RUN pip install \
+    numpy>=1.24.0 \
+    scipy>=1.10.0 \
+    pandas>=2.0.0 \
+    matplotlib>=3.6.0 \
+    seaborn>=0.12.0 \
+    plotly>=5.17.0 \
+    jupyter>=1.0.0 \
+    jupyterlab>=4.0.0 \
+    ipython>=8.0.0 \
+    networkx>=3.0 \
+    sympy>=1.12 \
+    numba>=0.58.0 \
+    scikit-learn>=1.3.0 \
+    statsmodels>=0.14.0 \
+    pytest>=7.4.0 \
+    pytest-cov>=4.1.0 \
+    black>=23.0.0 \
+    flake8>=6.0.0 \
+    mypy>=1.5.0 \
+    sphinx>=7.1.0 \
+    pre-commit>=3.4.0 \
+    tqdm>=4.66.0 \
+    colorama>=0.4.6 \
+    click>=8.1.0
+
+# Install Node.js tools for potential web interfaces
+RUN npm install -g pnpm
+
+# Set up development user
+RUN useradd -m -s /usr/bin/fish -u 1000 developer
+RUN usermod -aG sudo developer
+RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Create workspace directories
+RUN mkdir -p /workspace/mogadishu \
+    /workspace/data \
+    /workspace/results \
+    /workspace/logs \
+    /workspace/.cache/cargo \
+    /workspace/.cache/pip
+
+# Set ownership
+RUN chown -R developer:developer /workspace /opt/python-dev
+
+# Switch to development user  
+USER developer
+
+# Set up shell
+RUN echo 'set -gx PATH /opt/python-dev/bin $PATH' >> /home/developer/.config/fish/config.fish
+RUN echo 'set -gx CARGO_HOME /workspace/.cache/cargo' >> /home/developer/.config/fish/config.fish
+RUN echo 'set -gx PYTHONPATH /workspace/mogadishu/demos:$PYTHONPATH' >> /home/developer/.config/fish/config.fish
+
+# Environment variables
+ENV CARGO_HOME=/workspace/.cache/cargo
+ENV PYTHONPATH=/workspace/mogadishu/demos:$PYTHONPATH
+ENV PATH="/opt/python-dev/bin:$PATH"
+ENV RUST_BACKTRACE=1
+ENV RUST_LOG=debug
+
+# Development aliases and functions
+RUN echo 'alias ll="ls -la"' >> /home/developer/.bashrc
+RUN echo 'alias build="./scripts/build.ps1"' >> /home/developer/.bashrc  
+RUN echo 'alias test="./scripts/test.ps1"' >> /home/developer/.bashrc
+RUN echo 'alias watch="cargo watch -x build"' >> /home/developer/.bashrc
+
+# Create development configuration
+COPY docker/dev-config.toml /home/developer/.mogadishu-dev.toml
+
+# Expose ports for development services
+EXPOSE 3000 8000 8080 8888 9000
+
+# Set up Git (will be overridden by volume mounts in development)
+RUN git config --global user.name "Developer" \
+    && git config --global user.email "dev@mogadishu.local" \
+    && git config --global init.defaultBranch main
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+cd /workspace/mogadishu\n\
+echo "🚀 Mogadishu S-Entropy Development Environment"\n\
+echo "============================================="\n\
+echo "Rust version: $(rustc --version)"\n\
+echo "Python version: $(python --version)"\n\
+echo "Cargo home: $CARGO_HOME"\n\
+echo ""\n\
+echo "Available commands:"\n\
+echo "  build   - Build the project"\n\
+echo "  test    - Run tests"\n\
+echo "  watch   - Watch and rebuild on changes"\n\
+echo "  jupyter - Start Jupyter Lab"\n\
+echo ""\n\
+exec "$@"' > /home/developer/startup.sh \
+    && chmod +x /home/developer/startup.sh
+
+# Default command
+CMD ["/home/developer/startup.sh", "fish"]
+
+# Metadata
+LABEL org.opencontainers.image.title="Mogadishu S-Entropy Development Environment"
+LABEL org.opencontainers.image.description="Full development environment for S-entropy bioreactor modeling"
+LABEL org.opencontainers.image.version="0.1.0-dev"

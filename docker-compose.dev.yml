@@ -1,0 +1,231 @@
+# Mogadishu S-Entropy Framework - Development Docker Compose
+
+version: '3.8'
+
+services:
+  # Development environment
+  mogadishu-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: mogadishu-dev
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # Development server
+      - "8000:8000"   # Main application
+      - "8080:8080"   # Web interface  
+      - "8888:8888"   # Jupyter Lab
+      - "9000:9000"   # Debug interface
+    volumes:
+      # Source code (live reload)
+      - .:/workspace/mogadishu
+      - dev_cargo_cache:/workspace/.cache/cargo
+      - dev_pip_cache:/workspace/.cache/pip
+      
+      # Persistent development data
+      - dev_data:/workspace/data
+      - dev_results:/workspace/results
+      - dev_logs:/workspace/logs
+      
+      # Git configuration
+      - ~/.gitconfig:/home/developer/.gitconfig:ro
+      - ~/.ssh:/home/developer/.ssh:ro
+    environment:
+      - MOGADISHU_ENV=development
+      - MOGADISHU_CONFIG=/home/developer/.mogadishu-dev.toml
+      - RUST_BACKTRACE=full
+      - RUST_LOG=debug,mogadishu=trace
+      - PYTHONPATH=/workspace/mogadishu/demos
+      - CARGO_HOME=/workspace/.cache/cargo
+      - PIP_CACHE_DIR=/workspace/.cache/pip
+    working_dir: /workspace/mogadishu
+    networks:
+      - mogadishu-dev-network
+    profiles:
+      - dev
+
+  # Development database
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: mogadishu-db-dev
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=mogadishu_dev
+      - POSTGRES_USER=mogadishu_dev
+      - POSTGRES_PASSWORD=dev-password
+    networks:
+      - mogadishu-dev-network
+    profiles:
+      - dev
+
+  # Development Redis
+  redis-dev:
+    image: redis:7-alpine
+    container_name: mogadishu-cache-dev
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes --save 60 1000
+    networks:
+      - mogadishu-dev-network
+    profiles:
+      - dev
+
+  # Hot-reload file watcher (optional)
+  watcher:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: mogadishu-watcher
+    restart: unless-stopped
+    volumes:
+      - .:/workspace/mogadishu
+      - dev_cargo_cache:/workspace/.cache/cargo
+    working_dir: /workspace/mogadishu
+    command: >
+      /bin/bash -c "
+      echo '🔄 Starting file watcher for hot reload...' &&
+      cargo watch -x 'build --features oxygen-enhanced,quantum-transport,atp-constraints' -w src
+      "
+    environment:
+      - CARGO_HOME=/workspace/.cache/cargo
+      - RUST_LOG=info
+    networks:
+      - mogadishu-dev-network
+    depends_on:
+      - mogadishu-dev
+    profiles:
+      - dev
+      - watch
+
+  # Development documentation server
+  docs-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: mogadishu-docs-dev
+    restart: unless-stopped
+    ports:
+      - "8090:8000"
+    volumes:
+      - .:/workspace/mogadishu
+      - dev_cargo_cache:/workspace/.cache/cargo
+    working_dir: /workspace/mogadishu
+    command: >
+      /bin/bash -c "
+      echo '📚 Building and serving documentation...' &&
+      cargo doc --no-deps --document-private-items --features oxygen-enhanced,quantum-transport,atp-constraints &&
+      cd target/doc &&
+      python3 -m http.server 8000
+      "
+    environment:
+      - CARGO_HOME=/workspace/.cache/cargo
+    networks:
+      - mogadishu-dev-network
+    depends_on:
+      - mogadishu-dev
+    profiles:
+      - dev
+      - docs
+
+  # Test runner service
+  test-runner:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: mogadishu-test-runner
+    volumes:
+      - .:/workspace/mogadishu
+      - dev_cargo_cache:/workspace/.cache/cargo
+      - test_results:/workspace/test-results
+    working_dir: /workspace/mogadishu
+    command: >
+      /bin/bash -c "
+      echo '🧪 Running continuous tests...' &&
+      cargo watch -x 'test --features oxygen-enhanced,quantum-transport,atp-constraints'
+      "
+    environment:
+      - CARGO_HOME=/workspace/.cache/cargo
+      - RUST_LOG=debug
+      - RUST_BACKTRACE=1
+    networks:
+      - mogadishu-dev-network
+    depends_on:
+      - postgres-dev
+      - redis-dev
+    profiles:
+      - dev
+      - test
+
+  # Python demo development
+  python-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: mogadishu-python-dev
+    restart: unless-stopped
+    ports:
+      - "8889:8888"   # Jupyter Lab alternative port
+    volumes:
+      - ./demos:/workspace/mogadishu/demos
+      - ./test-results:/workspace/test-results
+      - dev_notebooks:/workspace/notebooks
+    working_dir: /workspace/mogadishu/demos
+    command: >
+      /bin/bash -c "
+      echo '🐍 Starting Python development environment...' &&
+      jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+      --NotebookApp.token='' --NotebookApp.password=''
+      --notebook-dir=/workspace/mogadishu/demos
+      "
+    environment:
+      - PYTHONPATH=/workspace/mogadishu/demos
+      - JUPYTER_ENABLE_LAB=yes
+    networks:
+      - mogadishu-dev-network
+    profiles:
+      - dev
+      - python
+
+volumes:
+  dev_cargo_cache:
+    driver: local
+  dev_pip_cache:
+    driver: local
+  dev_data:
+    driver: local
+  dev_results:
+    driver: local
+  dev_logs:
+    driver: local
+  dev_notebooks:
+    driver: local
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+  test_results:
+    driver: local
+
+networks:
+  mogadishu-dev-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# Development profiles:
+# docker-compose --profile dev up        # Basic development
+# docker-compose --profile dev --profile watch up  # With file watcher  
+# docker-compose --profile dev --profile test up   # With continuous testing
+# docker-compose --profile dev --profile docs up   # With documentation server
+# docker-compose --profile dev --profile python up # With Python development

@@ -1,0 +1,167 @@
+# Mogadishu S-Entropy Framework - Production Docker Compose
+
+version: '3.8'
+
+services:
+  # Main S-entropy framework service
+  mogadishu:
+    build: .
+    container_name: mogadishu-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # Main application port
+      - "8080:8080"   # Web interface port
+    volumes:
+      - mogadishu_data:/var/lib/mogadishu/data
+      - mogadishu_results:/var/lib/mogadishu/results
+      - mogadishu_logs:/var/lib/mogadishu/logs
+    environment:
+      - MOGADISHU_ENV=production
+      - MOGADISHU_LOG_LEVEL=info
+      - RUST_LOG=mogadishu=info
+    healthcheck:
+      test: ["CMD", "/opt/mogadishu/bin/mogadishu-cli", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mogadishu-network
+
+  # Jupyter Lab service for demo notebooks
+  jupyter:
+    build: .
+    container_name: mogadishu-jupyter
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./demos:/opt/mogadishu/demos
+      - jupyter_data:/opt/mogadishu/notebooks
+      - mogadishu_results:/var/lib/mogadishu/results:ro
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=mogadishu-s-entropy
+    command: >
+      /bin/bash -c "
+      source /opt/mogadishu/python-env/bin/activate &&
+      jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+      --NotebookApp.token=mogadishu-s-entropy
+      --notebook-dir=/opt/mogadishu/demos
+      "
+    networks:
+      - mogadishu-network
+    depends_on:
+      - mogadishu
+
+  # Redis for caching S-entropy calculations
+  redis:
+    image: redis:7-alpine
+    container_name: mogadishu-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - mogadishu-network
+
+  # PostgreSQL for storing bioreactor results
+  postgres:
+    image: postgres:15-alpine
+    container_name: mogadishu-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=mogadishu
+      - POSTGRES_USER=mogadishu
+      - POSTGRES_PASSWORD=s-entropy-framework
+    networks:
+      - mogadishu-network
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mogadishu-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - mogadishu-network
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mogadishu-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=s-entropy
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    networks:
+      - mogadishu-network
+    depends_on:
+      - prometheus
+
+  # NGINX reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: mogadishu-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+      - nginx_logs:/var/log/nginx
+    networks:
+      - mogadishu-network
+    depends_on:
+      - mogadishu
+      - jupyter
+      - grafana
+
+volumes:
+  mogadishu_data:
+    driver: local
+  mogadishu_results:
+    driver: local
+  mogadishu_logs:
+    driver: local
+  jupyter_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  mogadishu-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
