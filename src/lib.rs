@@ -49,6 +49,9 @@ pub mod cellular;
 /// Bioreactor modeling and optimization
 pub mod bioreactor;
 
+/// Comprehensive bioprocess simulator
+pub mod simulator;
+
 /// Miraculous dynamics and impossibility elimination
 pub mod miraculous;
 
