@@ -1,45 +1,41 @@
-# Mogadishu: S-Entropy Framework for Revolutionary Bioreactor Modeling
+# Mogadishu: S-Entropy Framework for Bioreactor Modeling
 
 [![Rust](https://github.com/fullscreen-triangle/mogadishu/workflows/Rust/badge.svg)](https://github.com/fullscreen-triangle/mogadishu/actions)
 [![Python](https://github.com/fullscreen-triangle/mogadishu/workflows/Python/badge.svg)](https://github.com/fullscreen-triangle/mogadishu/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![docs.rs](https://docs.rs/mogadishu/badge.svg)](https://docs.rs/mogadishu)
 
-> **Revolutionary S-Entropy Framework**: Transforming bioreactor modeling from computational generation to navigational discovery through observer-process integration and cellular computational networks.
+A computational framework for bioreactor modeling using S-entropy mathematical principles, observer-process integration, and cellular computational architectures.
 
 ## Overview
 
-Mogadishu implements the complete **S-Entropy Framework** for bioreactor modeling, representing a paradigm shift from traditional engineering approaches to computational biological networks that operate according to how cellular systems actually function.
+Mogadishu implements the S-Entropy Framework for bioreactor modeling. The framework models bioreactors as networks of cellular observers operating under S-entropy principles, where each cell functions as a finite observer that:
 
-### Core Innovation
-
-Instead of modeling bioreactors as complex engineering systems, Mogadishu models them as **networks of cellular observers** operating under S-entropy principles, where each cell becomes a finite observer that:
-
-- **Generates meta-information** about local molecular environments
-- **Operates under ATP constraints** rather than time constraints  
-- **Uses precision-by-difference** relative to cellular standards
-- **Processes information** through quantum membrane computation
-- **Coordinates** through oscillatory dynamics and electron cascade communication
+- Generates meta-information about local molecular environments
+- Operates under ATP concentration constraints rather than time constraints  
+- Uses precision-by-difference measurement relative to cellular reference standards
+- Processes information through membrane-based quantum computation
+- Coordinates through oscillatory dynamics and electron cascade communication networks
 
 ## Architecture
 
 ### S-Entropy Mathematical Framework
-- **Tri-dimensional S-space**: `(S_knowledge, S_time, S_entropy)` coordinates
-- **Observer insertion**: Transform infinite problems into finite spaces
+- **Tri-dimensional S-space**: `(S_knowledge, S_time, S_entropy)` coordinate system
+- **Observer insertion**: Transformation of infinite problem spaces into finite observation windows
 - **Precision-by-difference**: System-wide coordination through reference standards
-- **Navigational discovery**: Solutions exist as predetermined entropy endpoints
+- **Navigational discovery**: Solution identification through entropy endpoint navigation
 
 ### Cellular Computational Architecture  
-- **ATP-constrained dynamics**: `dx/d[ATP]` equations instead of `dx/dt`
-- **99%/1% Processing**: Membrane quantum computers + DNA emergency consultation
-- **Oxygen-enhanced networks**: Paramagnetic information processing substrate
-- **Biological Maxwell demons**: Information catalysts for molecular identification
+- **ATP-constrained dynamics**: Differential equations expressed as `dx/d[ATP]` rather than `dx/dt`
+- **Membrane/DNA processing**: 99% membrane quantum computation with 1% DNA library consultation
+- **Oxygen-enhanced networks**: Paramagnetic oxygen as information processing substrate
+- **Information catalysts**: Molecular identification through Maxwell demon mechanisms
 
 ### Miraculous Dynamics
-- **Tri-dimensional differential equations**: Enable local impossibilities while maintaining global viability
-- **Impossibility elimination**: Definitive proofs through maximum miracle testing
-- **Reverse causality analysis**: Future-to-past solution discovery
-- **Strategic miracle optimization**: Trade miracle levels across S-dimensions
+- **Tri-dimensional differential equations**: Local physics violations with maintained global viability
+- **Impossibility elimination**: Systematic proofs through maximum capability testing
+- **Reverse causality analysis**: Solution requirement analysis from endpoint to initial conditions
+- **Strategic optimization**: Miracle level allocation across S-dimensions
 
 ## Quick Start
 
@@ -77,10 +73,10 @@ let bioreactor = BioreactorBuilder::new()
     .with_miraculous_dynamics()
     .build()?;
 
-// Navigate to optimal endpoint instead of computational search
+// Navigate to optimal endpoint using S-entropy principles
 let result = bioreactor.navigate_to_optimal_endpoint(optimization_problem)?;
 
-// Enable miraculous performance if globally viable
+// Enable miraculous dynamics if globally viable
 let miracle_config = MiracleConfiguration {
     infinite_knowledge: true,
     instantaneous_time: true, 
@@ -94,56 +90,56 @@ if bioreactor.miracles_are_viable(miracle_config) {
 
 ## Python Demos
 
-The `demos/` directory contains comprehensive Python examples with plotting and numerical validation:
+The `examples/` directory contains Python examples with plotting and numerical validation:
 
 ```bash
 # Run S-entropy navigation demo
-python demos/s_entropy_navigation.py
+python examples/python/s_entropy_demo.py
 
-# Cellular Bayesian evidence processing
-python demos/cellular_processing.py
+# Cellular network processing examples
+python examples/python/cellular_processing.py
 
-# Miraculous dynamics visualization
-python demos/miraculous_dynamics.py
+# Miraculous dynamics analysis
+python examples/python/miraculous_dynamics.py
 
-# Impossibility elimination examples
-python demos/impossibility_elimination.py
+# Impossibility elimination testing
+python examples/python/impossibility_elimination.py
 
-# Complete bioreactor optimization
-python demos/bioreactor_optimization.py
+# Bioreactor optimization examples
+python examples/python/bioreactor_optimization.py
 ```
 
-All demos generate:
-- **Interactive plots** showing S-entropy navigation
-- **JSON results** with numerical validation data
-- **Performance comparisons** vs traditional methods
-- **Impossibility certificates** for unachievable targets
+Demos generate:
+- Interactive plots showing S-entropy navigation
+- JSON results with numerical validation data
+- Performance comparisons with traditional methods
+- Impossibility proofs for unachievable targets
 
 ## Key Features
 
-### 🧬 Revolutionary Cellular Modeling
+### Cellular Modeling
 - Each cell modeled as finite S-entropy observer
-- ATP-constrained dynamics reflecting true biological operation
-- Membrane quantum computers achieving 99% molecular resolution
-- Emergency DNA consultation for exceptional molecular challenges (1%)
+- ATP-constrained dynamics based on biological cellular operation
+- Membrane quantum computers with 99% molecular resolution capability
+- DNA consultation system for exceptional molecular challenges (1% of cases)
 
-### ⚡ Miraculous Performance Optimization
-- Individual dimensions can exhibit locally impossible behavior
-- Infinite knowledge processing, instantaneous solutions, negative entropy generation
-- Global S-viability maintained while enabling local impossibilities
-- Strategic violation of physical constraints for optimal performance
+### Performance Optimization
+- Individual S-dimensions can exhibit locally impossible behavior
+- Capabilities include infinite knowledge processing, instantaneous solutions, negative entropy generation
+- Global S-viability constraints maintained during local physics violations
+- Strategic allocation of physical constraint violations for optimization
 
-### 🎯 Impossibility Elimination
-- Definitive impossibility proofs through maximum miracle testing
+### Impossibility Elimination
+- Systematic impossibility proofs through maximum capability testing
 - Solution space constraint through impossibility filtering
-- Reverse causality analysis for required miracle levels
-- Transform infinite search into finite elimination problems
+- Reverse causality analysis for minimum required capability levels
+- Finite elimination problems replacing infinite search spaces
 
-### 🌊 Oxygen-Enhanced Information Processing
+### Oxygen-Enhanced Information Processing
 - Paramagnetic oxygen provides 8000× information processing enhancement
-- Electron cascade communication at >10⁶ m/s speeds
-- Atmospheric-cellular information coupling
-- Biological quantum computers outperforming classical systems
+- Electron cascade communication at speeds exceeding 10⁶ m/s
+- Atmospheric-cellular information coupling mechanisms
+- Quantum computation systems in biological contexts
 
 ## Project Structure
 
@@ -164,14 +160,14 @@ mogadishu/
 └── .github/                # CI/CD workflows
 ```
 
-## Performance Benchmarks
+## Performance Analysis
 
-| Method | Traditional CFD | S-Entropy Navigation | Speedup |
-|--------|----------------|---------------------|---------|
-| Solution Finding | O(n³) search | O(log S₀) navigation | 1000×+ |
-| Molecular ID | Sequential testing | 99% quantum resolution | 500× |
-| System Coordination | Diffusion-limited | Electron cascade | 10⁶× |
-| Impossibility Testing | Impossible | Definitive proof | ∞× |
+| Method | Traditional CFD | S-Entropy Navigation | Computational Complexity |
+|--------|----------------|---------------------|--------------------------|
+| Solution Finding | O(n³) iterative search | O(log S₀) navigation | Logarithmic vs cubic |
+| Molecular ID | Sequential testing | 99% quantum resolution | Direct vs sequential |
+| System Coordination | Diffusion-limited | Electron cascade | >10⁶× speed improvement |
+| Impossibility Testing | Not available | Definitive proof | Finite vs unbounded |
 
 ## Documentation
 
@@ -242,13 +238,11 @@ If you use Mogadishu in your research, please cite:
 
 ## Acknowledgments
 
-- **S-Entropy Theory**: Foundational mathematical framework for observer-process integration
-- **Cellular Quantum Computing**: Revolutionary understanding of biological information processing  
-- **Miraculous Dynamics**: Strategic impossibility utilization for optimal performance
-- **Biological Maxwell Demons**: Information catalysts enabling cellular computation
+- **S-Entropy Theory**: Mathematical framework for observer-process integration
+- **Cellular Quantum Computing**: Biological information processing mechanisms  
+- **Miraculous Dynamics**: Strategic constraint violation for optimization
+- **Biological Maxwell Demons**: Information catalysts in cellular computation
 
 ---
 
-**Transform your bioreactor optimization from impossible to inevitable through S-entropy navigation.**
-
-*Built with ❤️ by the S-Entropy Research Institute*
+*Bioreactor optimization through S-entropy navigation principles.*
