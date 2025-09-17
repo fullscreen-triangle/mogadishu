@@ -1,7 +1,17 @@
-# Mogadishu: S-Entropy Framework for Bioreactor Modeling
+<h1 align="center">Mogadishu</h1>
+<p align="center"><em>"Mistakes are divine"</em></p>
 
-[![Rust](https://github.com/fullscreen-triangle/mogadishu/workflows/Rust/badge.svg)](https://github.com/fullscreen-triangle/mogadishu/actions)
-[![Python](https://github.com/fullscreen-triangle/mogadishu/workflows/Python/badge.svg)](https://github.com/fullscreen-triangle/mogadishu/actions)
+
+<p align="center">
+  <img src="assets/img/mogadishu.jpg"  width="400" alt="Zangalewa Logo">
+</p>
+
+
+[![Rust](https://github.com/fullscreen-triangle/mogadishu/workflows/Rust/badge.svg)]
+[![Python](https://github.com/fullscreen-triangle/mogadishu/workflows/Python/badge.svg)]
+![Status: Development](https://img.shields.io/badge/Status-Development-blue)
+![Architecture: Multi-Layer](https://img.shields.io/badge/Architecture-Multi--Layer-purple)
+![Performance: Optimized](https://img.shields.io/badge/Performance-Optimized-green)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![docs.rs](https://docs.rs/mogadishu/badge.svg)](https://docs.rs/mogadishu)
 

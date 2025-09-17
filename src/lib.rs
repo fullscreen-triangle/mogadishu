@@ -71,6 +71,9 @@ pub mod error;
 #[cfg(feature = "python-bindings")]
 pub mod python;
 
+/// Real-time visualization and dashboard
+pub mod visualization;
+
 /// Benchmarking utilities
 #[cfg(feature = "benchmarks")]
 pub mod benchmarks;

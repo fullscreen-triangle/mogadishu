@@ -459,6 +459,57 @@ fn run_miraculous_demo(config: &CliConfig, _interactive: bool) -> Result<()> {
     Ok(())
 }
 
+/// Run dashboard command
+pub fn run_dashboard(matches: &ArgMatches, config: &CliConfig) -> Result<()> {
+    let port = matches.get_one::<String>("port")
+        .and_then(|s| s.parse::<u16>().ok())
+        .unwrap_or(3000);
+    
+    let update_interval = matches.get_one::<String>("update-interval")
+        .and_then(|s| s.parse::<u64>().ok())
+        .unwrap_or(1000);
+    
+    let auto_refresh = matches.get_flag("auto-refresh");
+    let open_browser = matches.get_flag("open-browser");
+
+    println!("🌐 Starting S-Entropy Process Dashboard");
+    println!("======================================");
+    println!("Port: {}", port);
+    println!("Update interval: {}ms", update_interval);
+    println!("Auto-refresh: {}", auto_refresh);
+    
+    if open_browser {
+        println!("Opening browser: http://localhost:{}", port);
+    }
+    println!();
+
+    // Configure dashboard
+    let dashboard_config = mogadishu::visualization::dashboard::DashboardConfig {
+        port,
+        update_interval_ms: update_interval,
+        auto_refresh,
+        enable_animations: true,
+        diagram_types: vec![
+            mogadishu::visualization::dashboard::DiagramType::SystemOverview,
+            mogadishu::visualization::dashboard::DiagramType::CellularNetwork,
+            mogadishu::visualization::dashboard::DiagramType::MiraculousStatus,
+            mogadishu::visualization::dashboard::DiagramType::PipelineFlow,
+        ],
+    };
+
+    // Start dashboard server
+    println!("🚀 Dashboard server starting...");
+    
+    tokio::runtime::Runtime::new()
+        .map_err(|e| MogadishuError::configuration(format!("Failed to create async runtime: {}", e)))?
+        .block_on(async {
+            mogadishu::visualization::dashboard::start_process_dashboard(dashboard_config).await
+                .map_err(|e| MogadishuError::configuration(format!("Dashboard failed: {}", e)))
+        })?;
+
+    Ok(())
+}
+
 /// Bioreactor demonstration
 fn run_bioreactor_demo(config: &CliConfig, _interactive: bool) -> Result<()> {
     println!("🏭 Complete Bioreactor Demonstration");

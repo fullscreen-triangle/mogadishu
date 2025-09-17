@@ -11,18 +11,18 @@ mod commands;
 mod config;
 mod output;
 
-use commands::{run_simulate, run_optimize, run_analyze, run_demo};
+use commands::{run_simulate, run_optimize, run_analyze, run_demo, run_dashboard};
 use config::CliConfig;
 
 fn main() {
     let matches = Command::new("mogadishu-cli")
         .version(mogadishu::VERSION)
         .author("Kundai Farai Sachikonye <kundai.sachikonye@wzw.tum.de>")
-        .about("S-Entropy Framework for Revolutionary Bioreactor Modeling")
+        .about("S-Entropy Framework for Bioreactor Modeling")
         .long_about(
-            "Mogadishu implements the complete S-Entropy Framework for bioreactor modeling, \
-            transforming traditional engineering approaches into computational biological networks \
-            that operate according to how cellular systems actually function."
+            "Mogadishu implements the S-Entropy Framework for bioreactor modeling through \
+            observer-process integration and cellular computational architectures that \
+            model bioprocesses according to cellular system operation principles."
         )
         .arg(
             Arg::new("config")
@@ -139,6 +139,38 @@ fn main() {
                         .help("Run in interactive mode")
                 )
         )
+        .subcommand(
+            Command::new("dashboard")
+                .about("Start real-time process dashboard with dynamic Mermaid diagrams")
+                .arg(
+                    Arg::new("port")
+                        .long("port")
+                        .short('p')
+                        .value_name("PORT")
+                        .default_value("3000")
+                        .help("Port to serve dashboard on")
+                )
+                .arg(
+                    Arg::new("update-interval")
+                        .long("update-interval")
+                        .short('u')
+                        .value_name("MILLISECONDS")
+                        .default_value("1000")
+                        .help("Update interval for diagrams in milliseconds")
+                )
+                .arg(
+                    Arg::new("auto-refresh")
+                        .long("auto-refresh")
+                        .action(clap::ArgAction::SetTrue)
+                        .help("Enable automatic browser refresh")
+                )
+                .arg(
+                    Arg::new("open-browser")
+                        .long("open-browser")
+                        .action(clap::ArgAction::SetTrue)
+                        .help("Automatically open browser to dashboard")
+                )
+        )
         .get_matches();
 
     // Initialize configuration
@@ -165,9 +197,10 @@ fn main() {
         Some(("optimize", sub_matches)) => run_optimize(sub_matches, &config),
         Some(("analyze", sub_matches)) => run_analyze(sub_matches, &config),
         Some(("demo", sub_matches)) => run_demo(sub_matches, &config),
+        Some(("dashboard", sub_matches)) => run_dashboard(sub_matches, &config),
         _ => {
             println!("🚀 Mogadishu S-Entropy Framework v{}", mogadishu::VERSION);
-            println!("Revolutionary bioreactor modeling through observer-process integration");
+            println!("Bioreactor modeling through observer-process integration");
             println!("\nUse --help to see available commands");
             Ok(())
         }
